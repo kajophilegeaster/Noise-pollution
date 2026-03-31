@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord - Pollution Sonore Douala</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 30px;
+            border-bottom: 2px solid #404040;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #c0c0c0;
+            font-weight: 300;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #808080;
+            font-size: 0.95em;
+            font-weight: 300;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #a8b882, #b8956a);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .logo-icon svg {
+            width: 40px;
+            height: 40px;
+            filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
+        }
+
+        .header-info h1 {
+            margin: 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #262626 0%, #1f1f1f 100%);
+            border: 1px solid #404040;
+            border-radius: 8px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: #606060;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .stat-label {
+            color: #909090;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: 300;
+            color: #e0e0e0;
+            margin-bottom: 10px;
+        }
+
+        .stat-unit {
+            color: #707070;
+            font-size: 0.85em;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        .status-normal {
+            background-color: #7a9d5f;
+        }
+
+        .status-warning {
+            background-color: #b8956a;
+        }
+
+        .status-danger {
+            background-color: #8b6f6f;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        .sensors-section {
+            margin-top: 30px;
+            background: linear-gradient(135deg, #262626 0%, #1f1f1f 100%);
+            border: 1px solid #404040;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            color: #c0c0c0;
+            margin-bottom: 20px;
+            font-weight: 300;
+            border-bottom: 2px solid #404040;
+            padding-bottom: 15px;
+        }
+
+        .sensors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .sensor-card {
+            background: #1a1a1a;
+            border: 1px solid #3a3a3a;
+            border-radius: 6px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .sensor-card:hover {
+            border-color: #505050;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .sensor-name {
+            color: #b0b0b0;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .sensor-location {
+            color: #707070;
+            font-size: 0.85em;
+            margin-bottom: 15px;
+        }
+
+        .sensor-value {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .sensor-label {
+            color: #808080;
+            font-size: 0.9em;
+        }
+
+        .sensor-reading {
+            color: #e0e0e0;
+            font-size: 1.3em;
+            font-weight: 500;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #2a2a2a;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #7a9d5f, #b8956a);
+            transition: width 0.5s ease;
+            border-radius: 3px;
+        }
+
+        .chart-section {
+            margin-top: 30px;
+            background: linear-gradient(135deg, #262626 0%, #1f1f1f 100%);
+            border: 1px solid #404040;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        canvas {
+            max-height: 400px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+
+        .legend {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #b0b0b0;
+            font-size: 0.9em;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #404040;
+            color: #606060;
+            font-size: 0.85em;
+        }
+
+        .update-time {
+            color: #707070;
+            font-size: 0.85em;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sensors-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-value {
+                font-size: 2em;
+            }
+        }
+
+        .alarm {
+            background-color: rgba(139, 111, 111, 0.2);
+            border-left: 4px solid #8b6f6f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-top">
+                <div class="logo-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+                        <g stroke="#1a1a1a" stroke-width="3" fill="none" stroke-linecap="round">
+                            <path d="M 50 30 Q 60 30 65 40 Q 70 50 65 60 Q 60 70 50 70"/>
+                            <path d="M 50 20 Q 70 20 75 35 Q 80 50 75 65 Q 70 80 50 80"/>
+                            <path d="M 50 10 Q 80 10 85 30 Q 90 50 85 70 Q 80 90 50 90"/>
+                        </g>
+                        <circle cx="50" cy="50" r="4" fill="#1a1a1a"/>
+                    </svg>
+                </div>
+                <div class="header-info">
+                    <h1>🔊 Système de Surveillance de la Pollution Sonore</h1>
+                </div>
+            </div>
+            <p class="subtitle">Douala - Tableau de Bord Temps Réel</p>
+            <div class="update-time">Dernière mise à jour: <span id="lastUpdate">--:--</span></div>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">
+                    <span class="status-indicator status-normal"></span>Moyenne Actuelle
+                </div>
+                <div class="stat-value" id="averageDb">--</div>
+                <div class="stat-unit">dB (décibels)</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">
+                    <span class="status-indicator status-warning"></span>Lecture Maximale
+                </div>
+                <div class="stat-value" id="maxDb">--</div>
+                <div class="stat-unit">dB (pic du jour)</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">
+                    <span class="status-indicator status-normal"></span>Capteurs Actifs
+                </div>
+                <div class="stat-value" id="activeSensors">--</div>
+                <div class="stat-unit">/ Total</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">
+                    <span class="status-indicator status-warning"></span>Alertes Déclenchées
+                </div>
+                <div class="stat-value" id="alerts">0</div>
+                <div class="stat-unit">aujourd'hui</div>
+            </div>
+        </div>
+
+        <div class="sensors-section">
+            <h2 class="section-title">📍 État des Capteurs</h2>
+            <div class="sensors-grid" id="sensorsGrid">
+                <!-- Capteurs générés dynamiquement -->
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <h2 class="section-title">📊 Tendance sur 24 Heures</h2>
+            <div class="chart-container">
+                <canvas id="trendChart"></canvas>
+            </div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #7a9d5f, #a8b882);"></div>
+                    <span>Niveau Normal (< 70 dB)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #b8956a, #c9a676);"></div>
+                    <span>Niveau Élevé (70-85 dB)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(135deg, #8b6f6f, #a08080);"></div>
+                    <span>Danger (> 85 dB)</span>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>© 2026 Système de Surveillance - Protection de l'Environnement Sonore de Douala</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script>
+        // Données des capteurs
+        const sensors = [
+            { id: 1, name: 'Capteur Port', location: 'Zone Portuaire', coords: '4.0511°N, 9.7679°E' },
+            { id: 2, name: 'Capteur Centre-Ville', location: 'Centre Commercial', coords: '4.0411°N, 9.7411°E' },
+            { id: 3, name: 'Capteur Route de Logbaba', location: 'Grand-mère (Logbaba)', coords: '4.0289°N, 9.7356°E' },
+            { id: 4, name: 'Capteur Bonasama', location: 'Zone Industrielle', coords: '4.0156°N, 9.7689°E' },
+            { id: 5, name: 'Capteur Akwa', location: 'Quartier Commercial', coords: '4.0556°N, 9.7611°E' },
+            { id: 6, name: 'Capteur Bonamoussadi', location: 'Zone Résidentielle', coords: '3.9989°N, 9.7544°E' }
+        ];
+
+        // Initialiser les données des capteurs
+        function generateSensorData() {
+            const now = new Date();
+            const hours = Array.from({ length: 24 }, (_, i) => {
+                const hour = new Date(now);
+                hour.setHours(hour.getHours() - (23 - i));
+                return hour.getHours() + ':00';
+            });
+
+            const data = {
+                sensors: sensors.map(sensor => ({
+                    ...sensor,
+                    value: Math.round(Math.random() * 30 + 60), // 60-90 dB
+                    status: 'normal'
+                })),
+                hourlyData: hours.map(() => Math.round(Math.random() * 25 + 65))
+            };
+
+            // Mettre à jour les statuts
+            data.sensors.forEach(sensor => {
+                if (sensor.value > 85) sensor.status = 'danger';
+                else if (sensor.value > 75) sensor.status = 'warning';
+            });
+
+            return data;
+        }
+
+        let sensorData = generateSensorData();
+        let alertCount = Math.floor(Math.random() * 5);
+
+        // Mettre à jour le tableau de bord
+        function updateDashboard() {
+            const now = new Date();
+            document.getElementById('lastUpdate').textContent = 
+                now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+
+            sensorData = generateSensorData();
+            
+            // Calculs
+            const values = sensorData.sensors.map(s => s.value);
+            const average = Math.round(values.reduce((a, b) => a + b) / values.length);
+            const max = Math.max(...values);
+            const active = sensorData.sensors.length;
+
+            // Mise à jour des stats
+            document.getElementById('averageDb').textContent = average;
+            document.getElementById('maxDb').textContent = max;
+            document.getElementById('activeSensors').textContent = `${active}/${active}`;
+            
+            // Ajouter une alerte aléatoire
+            if (Math.random() > 0.7) alertCount++;
+            document.getElementById('alerts').textContent = alertCount;
+
+            // Mettre à jour les capteurs
+            const grid = document.getElementById('sensorsGrid');
+            grid.innerHTML = sensorData.sensors.map(sensor => {
+                const percentage = (sensor.value / 100) * 100;
+                const statusClass = `status-${sensor.status}`;
+                const alarmClass = sensor.value > 85 ? 'alarm' : '';
+                
+                return `
+                    <div class="sensor-card ${alarmClass}">
+                        <div class="sensor-name">${sensor.name}</div>
+                        <div class="sensor-location">📍 ${sensor.location}</div>
+                        <div class="sensor-value">
+                            <span class="sensor-label">Niveau Sonore</span>
+                            <span class="sensor-reading">${sensor.value} dB</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${percentage}%;"></div>
+                        </div>
+                        <div class="sensor-value" style="margin-top: 12px; margin-bottom: 0;">
+                            <span class="sensor-label">Statut</span>
+                            <span style="color: #909090; font-size: 0.9em;">
+                                <span class="status-indicator ${statusClass}"></span>
+                                ${sensor.status === 'danger' ? 'DANGER' : sensor.status === 'warning' ? 'ALERTE' : 'NORMAL'}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            updateChart();
+        }
+
+        // Créer le graphique
+        let chart = null;
+
+        function updateChart() {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            
+            const hours = Array.from({ length: 24 }, (_, i) => {
+                const hour = new Date();
+                hour.setHours(hour.getHours() - (23 - i));
+                return hour.getHours() + ':00';
+            });
+
+            const data = {
+                labels: hours,
+                datasets: [
+                    {
+                        label: 'Niveau Moyen (dB)',
+                        data: sensorData.hourlyData,
+                        borderColor: '#a8b882',
+                        backgroundColor: 'rgba(168, 184, 130, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4,
+                        pointStyle: 'circle',
+                        pointRadius: 4,
+                        pointBackgroundColor: '#a8b882',
+                        pointBorderColor: '#2d2d2d',
+                        pointBorderWidth: 2,
+                        pointHoverRadius: 6
+                    }
+                ]
+            };
+
+            if (chart) {
+                chart.data = data;
+                chart.update();
+            } else {
+                chart = new Chart(ctx, {
+                    type: 'line',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#b0b0b0',
+                                    font: { size: 12 }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                min: 50,
+                                max: 100,
+                                ticks: {
+                                    color: '#707070'
+                                },
+                                grid: {
+                                    color: '#2a2a2a'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: '#707070'
+                                },
+                                grid: {
+                                    color: '#2a2a2a'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Initialisation
+        updateDashboard();
+
+        // Mise à jour toutes les 10 secondes (simulation)
+        setInterval(updateDashboard, 10000);
+
+        // Affichage des coordonnées GPS au survol
+        document.addEventListener('mouseover', (e) => {
+            if (e.target.closest('.sensor-card')) {
+                const card = e.target.closest('.sensor-card');
+                const sensorName = card.querySelector('.sensor-name').textContent;
+                const sensor = sensorData.sensors.find(s => s.name === sensorName);
+                if (sensor) {
+                    console.log(`📍 ${sensor.name}: ${sensor.coords}`);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
